@@ -1,4 +1,40 @@
 #!/bin/bash
+#!/usr/bin/env bash
+#===============================================================================
+#  Script Name   : init.sh
+#  Description   : Automated offline Kubernetes control-plane setup with
+#                  containerd, image preload, and Flannel CNI configuration.
+#
+#  Author        : Jeeva D
+#  Created Date  : 2026-02-17
+#  Last Modified : 2026-02-19
+#  Version       : 1.1.0
+#  Email         : jeeva.d87@gmail.com
+#
+#  Usage         : bash init.sh
+#
+#  Requirements  :
+#    - Rocky Linux 9 / Centos stream 9/ RHEL 9 
+#    - Root privileges
+#    - Offline RPMs available
+#    - Pre-downloaded container images (.tar)
+#
+#  Components Installed:
+#    - containerd
+#    - kubeadm, kubelet, kubectl
+#    - Flannel CNI
+#
+#  Notes:
+#    - Script is idempotent (safe to run multiple times)
+#    - Skips already configured components
+#    - Designed for production-ready offline environments
+#
+#  Exit Codes:
+#    0  - Success
+#    1  - General error
+#    2  - Missing dependency
+#
+#===============================================================================
 set -euo pipefail
 
 echo "====================================================="
@@ -83,7 +119,11 @@ echo -e $BOLD_CYAN "=== Installing the Packages ===" $RESET
 
 if grep -q "Linux release 9" /etc/redhat-release ; then
     yum install -y "$RPMS_DIR"/rh9/containerd.io*.rpm
+elif grep -q "Stream release 9" /etc/redhat-release ; then
+    yum install -y "$RPMS_DIR"/rh9/containerd.io*.rpm
 elif grep -q "Linux release 8" /etc/redhat-release ; then
+    yum install -y "$RPMS_DIR"/rh8/containerd.io*.rpm
+elif grep -q "Stream release 8" /etc/redhat-release ; then
     yum install -y "$RPMS_DIR"/rh8/containerd.io*.rpm
 else
     echo "The OS version is not supported, Supported OS versions are ROCKY 9, ROCKY8, RHEL 9 and RHEL 8"
