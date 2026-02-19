@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-config-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-config
+  template:
+    metadata:
+      labels:
+        app: nginx-config
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        env:
+        - name: APP_MODE
+          valueFrom:
+            configMapKeyRef:
+              name: nginx-config
+              key: APP_MODE
+        - name: APP_COLOR
+          valueFrom:
+            configMapKeyRef:
+              name: nginx-config
+              key: APP_COLOR
+        ports:
+        - containerPort: 80
+
